@@ -3,7 +3,7 @@ import numpy as np
 import time
 import random
 
-server = SimpleXMLRPCServer(('localhost', 9999))
+server = SimpleXMLRPCServer(('localhost', 10001))
 player_turn = 0
 players = []
 def login(player_name: str) -> int:
@@ -20,18 +20,25 @@ def login(player_name: str) -> int:
 server.register_function(login, "login")
 
 
-def turn(player: int) -> bool:
+def my_turn(player: int) -> bool:
     global player_turn
     if(player_turn == player):
-        if(player_turn == 1):
-            player_turn = 2
-        else:
-            player_turn = 1
         print(players[player-1]+'\'s turn')
         return True
     else:
         return False
-server.register_function(turn, "my_turn")
+server.register_function(my_turn, "my_turn")
+
+
+def not_my_turn():
+    global player_turn
+    if(player_turn == 1):
+        player_turn = 2
+        return 0
+    else:
+        player_turn = 1
+        return 0
+server.register_function(not_my_turn, "not_my_turn")
 
 
 def players_ready() -> bool:
@@ -70,33 +77,36 @@ def get_board():
 server.register_function(get_board, "board")
 
 
-def piece_placer(line: int, colu: int, player: int):
+def piece_placer(line: int, column: int, player: int):
     board[line, column] = player
+    print(board)
 
-def valid_place(line: int, colu: int) -> bool:
-    if(board[line, colu] == 0 or board[line, colu] == 1 or board[line, colu] == 2):
+def valid_place(line: int, column: int) -> bool:
+    print(line, column)
+    if(board[line, column] == 0 or board[line, column] == 1 or board[line, column] == 2):
+        print("valid_place")
         return False
     else:
         return True
 
-def line_colu(place: str):
-    print(place)
+def line_column(place: str):
     line = int(place[0]) - 1
     column = int(ord(place[1]) - ord('A'))
+    print(line, column)
     return line, column
 
 def place_piece(place: str, player: int) -> bool:
-    l, c = line_colu(place)
+    
+    l, c = line_column(place)
     if(valid_place(l, c)):
-        print("Player "+players[player]+" place a piece in "+place)
+        print(player)
+        print("Player "+players[player-1]+" place a piece in "+place)
         piece_placer(l, c, player)
         return True
     else:
         print("Player "+players[player]+" tryed to place a piece in "+place)
         return False
 server.register_function(place_piece, "place_piece")
-
-
 
 
 server.serve_forever()
