@@ -38,21 +38,23 @@ while(s.ready()):
 
 
 pieces_in_board = 0
+max_pieces = 2
 print("Time to place your pieces")
-while(True):
-    while(s.my_turn(player) and pieces_in_board <= 1):
-        print("Where you want to place your piece?")
-        place = str(input()).upper()
+#####----Time to place pieces in board
+while(s.my_turn(player) and pieces_in_board <= max_pieces):
+    print("Where you want to place your piece?")
+    place = str(input()).upper()
 
-        while(not(s.place_piece(place, player))):
-            print("Invalid place\nIndicate a valid place!")
-            place = str(input()).upper()
-        
-        pieces_in_board += 1
-        print_board()
-        print("Remaing pieces: "+str(9-pieces_in_board))
-        s.not_my_turn()
-    else:
-        print_board()
-        time.sleep(2)
-        #it's not my turn
+    while(not(s.place_piece(place, player))):
+        print("Invalid place\nIndicate a valid place!")
+        place = str(input()).upper()
+    
+    pieces_in_board += 1
+    print_board()
+    print("Remaing pieces: "+str(9-pieces_in_board))
+    s.not_my_turn()
+else:
+    print_board()
+    time.sleep(2)
+    #it's not my turn
+#####----Time to move pieces arround the board
