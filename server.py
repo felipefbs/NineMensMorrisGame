@@ -84,9 +84,9 @@ def piece_placer(line: int, column: int, player: int):
 def valid_place(line: int, column: int) -> bool:
     print(line, column)
     if(board[line, column] == 0 or board[line, column] == 1 or board[line, column] == 2):
-        print("valid_place")
         return False
     else:
+        print("valid_place")
         return True
 
 def line_column(place: str):
@@ -104,24 +104,21 @@ def place_piece(place: str, player: int) -> bool:
         piece_placer(l, c, player)
         return True
     else:
-        print("Player "+players[player]+" tryed to place a piece in "+place)
+        print("Player "+players[player-1]+" tryed to place a piece in "+place)
         return False
 server.register_function(place_piece, "place_piece")
 
 def move_piece(curr_place: str, next_place: str, player: int) -> str:
-    l, c = line_column(curr_place)
-    if(board[l, c] =player):
-        #ta sussa
+    
+    if(board[line_column(curr_place)] == player and board[line_column(next_place)] == 5):
+        l, c = line_column(curr_place)
         piece_placer(l, c, 5)
-    else:
-        #jogador escolheu errado
-        return 'error curr_place'
-    l, c = line_column(next_place)
-    if(board[l,c = 0]):
+        l, c = line_column(next_place)
         piece_placer(l, c, player)
+        return True
     else:
-        #jogador escolheu errado
-        return 'error next_place'
+        return False
+
 server.register_function(move_piece, "move")   
 
 server.serve_forever()
