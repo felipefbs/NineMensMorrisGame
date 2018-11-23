@@ -6,6 +6,7 @@ s = xmlrpc.client.ServerProxy('http://localhost:10001')
 
 def print_board():
     board = s.board()
+    os.system("clear")
     print("A B C D E F G")
     print("-------------")
     count = 0
@@ -41,20 +42,68 @@ pieces_in_board = 0
 max_pieces = 2
 print("Time to place your pieces")
 #####----Time to place pieces in board
-while(s.my_turn(player) and pieces_in_board <= max_pieces):
-    print("Where you want to place your piece?")
-    place = str(input()).upper()
-
-    while(not(s.place_piece(place, player))):
-        print("Invalid place\nIndicate a valid place!")
+while(True):
+    while(s.my_turn(player) and pieces_in_board < max_pieces):
+        print_board()
+        print("Remaing pieces: " + str(max_pieces - pieces_in_board))
+        print("Where you want to place your piece?")
         place = str(input()).upper()
+        
+        while(not(s.place_piece(place, player))):
+            print("Invalid place\nIndicate a valid place!")
+            place = str(input()).upper()
+        
+        pieces_in_board += 1
+        print_board()
+        s.not_my_turn()
+    else:
+        if(not pieces_in_board == max_pieces):
+            print_board()
+            print("Enemy turn...")
+            print("Remaing pieces: " + str(max_pieces - pieces_in_board))
+            time.sleep(2)
+        else:
+            break
+
+print("Time to move your pieces arround the board to decide whom wins!")
+end_game = True
+error_cp = 'error curr_place'
+error_np = 'error next_place'
+while(True):
+    while(s.my_turn(player) and end_game):
+        print_board()
+        print("You have " + str(pieces_in_board)+" pieces in the board")
+        
+        print("Wich piece you want to move?")
+        curr_place = str(input()).upper()
+        print("To where you wanna to move your piece?")
+        next_place = str(input()).upper()
+        while (not(s.move(curr_place, next_place, player) == error_cp)):
+            print("You tried to select an invalid piece\nSelect a valid piece")
+            curr_place = str(input()).upper()
+            print("To where you wanna to move your piece?")
+            next_place = str(input()).upper()
+            while (not(s.move(curr_place, next_place, player) == error_np)):
+                print("Select a valid place to move your piece\nTo where you wanna to move your piece?")
+                next_place = str(input()).upper()
+
+             
+        
+        #se formar moinho jogador tira peça inimiga
+        
+        print_board()
+        s.not_my_turn()
+    else:
+        print_board()
+        print("Enemy turn...")
+        print("Remaing pieces: " + str(max_pieces - pieces_in_board))
+        time.sleep(2)
+
+
     
-    pieces_in_board += 1
-    print_board()
-    print("Remaing pieces: "+str(9-pieces_in_board))
-    s.not_my_turn()
-else:
-    print_board()
-    time.sleep(2)
+    
+    
+
+print("Acabou")
     #it's not my turn
 #####----Time to move pieces arround the board

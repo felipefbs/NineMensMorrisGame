@@ -108,5 +108,20 @@ def place_piece(place: str, player: int) -> bool:
         return False
 server.register_function(place_piece, "place_piece")
 
+def move_piece(curr_place: str, next_place: str, player: int) -> str:
+    l, c = line_column(curr_place)
+    if(board[l, c] =player):
+        #ta sussa
+        piece_placer(l, c, 5)
+    else:
+        #jogador escolheu errado
+        return 'error curr_place'
+    l, c = line_column(next_place)
+    if(board[l,c = 0]):
+        piece_placer(l, c, player)
+    else:
+        #jogador escolheu errado
+        return 'error next_place'
+server.register_function(move_piece, "move")   
 
 server.serve_forever()
