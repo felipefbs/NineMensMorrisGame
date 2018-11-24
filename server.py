@@ -108,7 +108,7 @@ def place_piece(place: str, player: int) -> bool:
         return False
 server.register_function(place_piece, "place_piece")
 
-def move_piece(curr_place: str, next_place: str, player: int) -> str:
+def move_piece(curr_place: str, next_place: str, player: int) -> bool:
     
     if(board[line_column(curr_place)] == player and board[line_column(next_place)] == 5):
         l, c = line_column(curr_place)
@@ -118,7 +118,15 @@ def move_piece(curr_place: str, next_place: str, player: int) -> str:
         return True
     else:
         return False
-
 server.register_function(move_piece, "move")   
 
+
+def remove_piece(place: str, enemy_player: int) -> bool:
+    l, c = line_column(place)
+    if (board[l,c] == enemy_player):
+        piece_placer(l, c, 5)
+        return True
+    else:
+        return False
+server.register_function(remove_piece, "remove")
 server.serve_forever()

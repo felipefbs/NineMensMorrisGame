@@ -31,6 +31,12 @@ if(player == 0):
     print("Sorry "+player_name+" but this game already have two players...")
     exit()
 
+
+if (player == 1):
+    enemy_player = 2
+else:
+    enemy_player = 1
+
 print_board()
 
 while(s.ready()):
@@ -66,8 +72,6 @@ while(True):
 print_board()
 print("Time to move your pieces arround the board to decide whom wins!")
 end_game = True
-error_cp = 'error curr_place'
-error_np = 'error next_place'
 while(True):
     while(s.my_turn(player)):
         print_board()
@@ -83,8 +87,13 @@ while(True):
             curr_place = str(input()).upper()
             print("To where you wanna to move your piece?")
             next_place = str(input()).upper()
-
+        print_board()
         
+        
+        print("Select a piece from enemy player to remove")
+        place = str(input()).upper()
+        s.remove(place, enemy_player)
+
         print_board()
         s.not_my_turn()
     else:
