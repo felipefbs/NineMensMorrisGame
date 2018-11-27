@@ -23,6 +23,12 @@ def print_board():
             count+=1
         print("|"+ str(int(count/7)))
 
+def verify_mill(player: int, enemy_player: int):
+    if (s.verify() == player):
+        print("Select a piece from enemy player to remove")
+        place = str(input()).upper()
+        s.remove(place, enemy_player)
+
 print("Welcome to the Nine Men's Morris game\nWhat's your name player?")
 player_name = str(input())
 player = s.login(player_name)
@@ -45,11 +51,11 @@ while(s.ready()):
 
 
 pieces_in_board = 0
-max_pieces = 6
+max_pieces = 9
 print("Time to place your pieces")
 #####----Time to place pieces in board
-while(True):
-    while(s.my_turn(player) and pieces_in_board < max_pieces):
+while(pieces_in_board < max_pieces):
+    while(s.my_turn(player)):
         print_board()
         print("Remaing pieces: " + str(max_pieces - pieces_in_board))
         print("Where you want to place your piece?")
@@ -60,21 +66,20 @@ while(True):
             place = str(input()).upper()
         
         pieces_in_board += 1
+        verify_mill(player, enemy_player)
         s.not_my_turn()
     else:
-        if(not pieces_in_board == max_pieces):
-            print_board()
-            print("Enemy turn...")
-            print("Remaing pieces: " + str(max_pieces - pieces_in_board))
-            time.sleep(2)
-        else:
-            break
-    s.verify()
+        print_board()
+        print("Enemy turn...")
+        print("Remaing pieces: " + str(max_pieces - pieces_in_board))
+        time.sleep(2)
+
+
 print_board()
 print("Time to move your pieces arround the board to decide whom wins!")
 game = 0   
 while(game == 0):
-    while(s.my_turn(player)):
+    if(s.my_turn(player)):
         print_board()
         print("You have " + str(pieces_in_board)+" pieces in the board")
         
@@ -90,10 +95,7 @@ while(game == 0):
             next_place = str(input()).upper()
         print_board()
         
-        if (s.verify() == player):
-            print("Select a piece from enemy player to remove")
-            place = str(input()).upper()
-            s.remove(place, enemy_player)
+        verify_mill(player, enemy_player)
 
         print_board()
         s.not_my_turn()
