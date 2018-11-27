@@ -129,4 +129,44 @@ def remove_piece(place: str, enemy_player: int) -> bool:
     else:
         return False
 server.register_function(remove_piece, "remove")
+
+def verify_mill():
+    colunas = []
+    linhas = []
+
+    for i in range(7):
+        colunas.append(board[:,i])
+        linhas.append(board[i])
+    linha31 = linhas[3][:3]
+    linha32 = linhas[3][4:]
+    coluna31 = colunas[3][:3]
+    coluna32 = colunas[3][4:]
+    del linhas[3]
+    del colunas[3]
+    if (linha31.sum()==3 or linha32.sum()==3 or coluna31.sum()==3 or coluna32.sum()==3):
+        print("mill 1")
+        return 1
+    if (linha31.sum()==6 or linha32.sum()==6 or coluna31.sum()==6 or coluna32.sum()==6):
+        print("mill 2")
+        return 2
+
+    for i in range(6):
+        if (linhas[i].sum() == 3):
+                print("mill 1")
+                return 1
+    for i in range(6):
+        if (colunas[i].sum() == 3):
+                print("mill 1")
+                return 1
+
+    for i in range(6):
+        if (linhas[i].sum() == 6):
+                print("mill 2")
+                return 2
+    for i in range(6):
+        if (colunas[i].sum() == 6):
+                print("mill 2")
+                return 2
+    return 0
+server.register_function(verify_mill, "verify")
 server.serve_forever()

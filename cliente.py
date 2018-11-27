@@ -45,7 +45,7 @@ while(s.ready()):
 
 
 pieces_in_board = 0
-max_pieces = 1
+max_pieces = 3
 print("Time to place your pieces")
 #####----Time to place pieces in board
 while(True):
@@ -69,6 +69,7 @@ while(True):
             time.sleep(2)
         else:
             break
+    s.verify()
 print_board()
 print("Time to move your pieces arround the board to decide whom wins!")
 end_game = True
@@ -92,7 +93,8 @@ while(True):
         
         print("Select a piece from enemy player to remove")
         place = str(input()).upper()
-        s.remove(place, enemy_player)
+        s.verify()
+        #s.remove(place, enemy_player)
 
         print_board()
         s.not_my_turn()
