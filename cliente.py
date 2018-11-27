@@ -6,7 +6,7 @@ s = xmlrpc.client.ServerProxy('http://localhost:10001')
 
 def print_board():
     board = s.board()
-    os.system("clear")
+    #os.system("clear")
     print("A B C D E F G")
     print("-------------")
     count = 0
