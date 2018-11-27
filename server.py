@@ -169,4 +169,25 @@ def verify_mill():
                 return 2
     return 0
 server.register_function(verify_mill, "verify")
+
+def end_game():
+    player1_pieces = 0
+    player2_pieces = 0
+
+    for i in range(7):
+        for j in range(7):
+            if(board[i,j] == 1):
+                player1_pieces += 1
+            elif(board[i,j] == 2):
+                player2_pieces += 1
+    if (player1_pieces ==2 or player2_pieces ==2):
+        if(player1_pieces<player2_pieces):
+            return 1
+        else:
+            return 2
+    
+    return 0
+server.register_function(end_game, "end_game")
+
+
 server.serve_forever()

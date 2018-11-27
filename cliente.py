@@ -45,7 +45,7 @@ while(s.ready()):
 
 
 pieces_in_board = 0
-max_pieces = 3
+max_pieces = 6
 print("Time to place your pieces")
 #####----Time to place pieces in board
 while(True):
@@ -72,8 +72,8 @@ while(True):
     s.verify()
 print_board()
 print("Time to move your pieces arround the board to decide whom wins!")
-end_game = True
-while(True):
+game = 0   
+while(game == 0):
     while(s.my_turn(player)):
         print_board()
         print("You have " + str(pieces_in_board)+" pieces in the board")
@@ -90,11 +90,10 @@ while(True):
             next_place = str(input()).upper()
         print_board()
         
-        
-        print("Select a piece from enemy player to remove")
-        place = str(input()).upper()
-        s.verify()
-        #s.remove(place, enemy_player)
+        if (s.verify() == player):
+            print("Select a piece from enemy player to remove")
+            place = str(input()).upper()
+            s.remove(place, enemy_player)
 
         print_board()
         s.not_my_turn()
@@ -103,3 +102,11 @@ while(True):
         print("Enemy turn...")
         print("You have " + str(pieces_in_board)+" pieces in the board")
         time.sleep(3)
+
+    game = s.end_game()
+
+if(game == 1):
+    print("Congratulations, you win")
+elif(game == 2):
+    print("Sorry buddy, but you loose the game")
+
