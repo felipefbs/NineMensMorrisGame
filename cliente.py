@@ -1,7 +1,7 @@
 import xmlrpc.client
 import time
 import os
-s = xmlrpc.client.ServerProxy('http://localhost:10001')
+s = xmlrpc.client.ServerProxy('http://192.168.3.11:10001')
 
 
 def print_board():
