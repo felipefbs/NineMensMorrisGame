@@ -1,9 +1,9 @@
 from xmlrpc.server import SimpleXMLRPCServer
-import numpy as np 
+import numpy as np
 import time
 import random
 
-server = SimpleXMLRPCServer(('192.168.3.11', 10001))
+server = SimpleXMLRPCServer(('192.168.3.5', 10001))
 player_turn = 0
 players = []
 def login(player_name: str) -> int:
@@ -83,11 +83,14 @@ def piece_placer(line: int, column: int, player: int):
 
 def valid_place(line: int, column: int) -> bool:
     print(line, column)
-    if(board[line, column] == 0 or board[line, column] == 1 or board[line, column] == 2):
-        return False
+    if (0 <= line <= 6 and 0 <= column <= 6):   
+        if(board[line, column] == 0 or board[line, column] == 1 or board[line, column] == 2):
+            return False
+        else:
+            print("valid_place")
+            return True
     else:
-        print("valid_place")
-        return True
+        return False
 
 def line_column(place: str):
     line = int(place[0]) - 1
@@ -96,7 +99,6 @@ def line_column(place: str):
     return line, column
 
 def place_piece(place: str, player: int) -> bool:
-    
     l, c = line_column(place)
     if(valid_place(l, c)):
         print(player)
@@ -109,13 +111,19 @@ def place_piece(place: str, player: int) -> bool:
 server.register_function(place_piece, "place_piece")
 
 def move_piece(curr_place: str, next_place: str, player: int) -> bool:
-    
+    # se o local atual for uma peça do jogador e o proximo local for um local vazio e ambos estiverem em locais dentro do tabuleiro a função executa o movimento
     if(board[line_column(curr_place)] == player and board[line_column(next_place)] == 5):
         l, c = line_column(curr_place)
-        piece_placer(l, c, 5)
+        if (0 <= l <= 6 and 0 <= c <= 6):   
+            piece_placer(l, c, 5)
+        else:
+            return False
         l, c = line_column(next_place)
-        piece_placer(l, c, player)
-        return True
+        if (0 <= line <= 6 and 0 <= column <= 6):   
+            piece_placer(l, c, player)
+            return True
+        else:
+            return False
     else:
         return False
 server.register_function(move_piece, "move")   
@@ -123,9 +131,12 @@ server.register_function(move_piece, "move")
 
 def remove_piece(place: str, enemy_player: int) -> bool:
     l, c = line_column(place)
-    if (board[l,c] == enemy_player):
-        piece_placer(l, c, 5)
-        return True
+    if (0 <= l <= 6 and 0 <= c <= 6):
+        if (board[l,c] == enemy_player):
+            piece_placer(l, c, 5)
+            return True
+        else:
+            return False
     else:
         return False
 server.register_function(remove_piece, "remove")
