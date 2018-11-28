@@ -99,8 +99,8 @@ def line_column(place: str):
     return line, column
 
 def place_piece(place: str, player: int) -> bool:
-    l, c = line_column(place)
     if (place[0].isdigit() and place[1].isalpha()):
+        l, c = line_column(place)
         if(valid_place(l, c)):
             print(player)
             print("Player "+players[player-1]+" place a piece in "+place)
