@@ -100,13 +100,16 @@ def line_column(place: str):
 
 def place_piece(place: str, player: int) -> bool:
     l, c = line_column(place)
-    if(valid_place(l, c)):
-        print(player)
-        print("Player "+players[player-1]+" place a piece in "+place)
-        piece_placer(l, c, player)
-        return True
+    if (place[0].isdigit() and place[1].isalpha()):
+        if(valid_place(l, c)):
+            print(player)
+            print("Player "+players[player-1]+" place a piece in "+place)
+            piece_placer(l, c, player)
+            return True
+        else:
+            print("Player "+players[player-1]+" tryed to place a piece in "+place)
+            return False
     else:
-        print("Player "+players[player-1]+" tryed to place a piece in "+place)
         return False
 server.register_function(place_piece, "place_piece")
 
