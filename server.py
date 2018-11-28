@@ -3,7 +3,7 @@ import numpy as np
 import time
 import random
 
-server = SimpleXMLRPCServer(('192.168.3.11', 10001))
+server = SimpleXMLRPCServer(('localhost', 10001))
 player_turn = 0
 players = []
 def login(player_name: str) -> int:

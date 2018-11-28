@@ -4,7 +4,7 @@ import os
 
 try:
     ip = os.sys.argv[1]
-    s = xmlrpc.client.ServerProxy('http://'+ip+':10001')
+    s = xmlrpc.client.ServerProxy('http://localhost:10001')
 except IndexError:
     print("Invalid IP")
     exit()
@@ -67,10 +67,10 @@ while(pieces_in_board < max_pieces):
         print_board()
         print("Remaing pieces: " + str(max_pieces - pieces_in_board))
         print("Where you want to place your piece?")
-        place = str(input()).upper()
+        place = str(input()).upper().replace(" ", "")
         while(not(s.place_piece(place, player))):
             print("Invalid place\nIndicate a valid place!")
-            place = str(input()).upper()
+            place = str(input()).upper().replace(" ", "")
         pieces_in_board += 1
         verify_mill(player, enemy_player)
         s.not_my_turn()      
@@ -90,15 +90,15 @@ while(game == 0):
         print("You have " + str(pieces_in_board)+" pieces in the board")
         
         print("Wich piece you want to move?")
-        curr_place = str(input()).upper()
+        curr_place = str(input()).upper().replace(" ", "")
         print("To where you wanna to move your piece?")
-        next_place = str(input()).upper()
+        next_place = str(input()).upper().replace(" ", "")
 
         while (not s.move(curr_place, next_place, player)):
             print("You tried to select an invalid piece or an invalid place\nDo it right this time")
-            curr_place = str(input()).upper()
+            curr_place = str(input()).upper().replace(" ", "")
             print("To where you wanna to move your piece?")
-            next_place = str(input()).upper()
+            next_place = str(input()).upper().replace(" ", "")
         print_board()
         
         verify_mill(player, enemy_player)
