@@ -158,27 +158,33 @@ def verify_mill():
     del linhas[3]
     del colunas[3]
     if (linha31.sum()==3 or linha32.sum()==3 or coluna31.sum()==3 or coluna32.sum()==3):
-        print("mill 1")
-        return 1
+        if (0 not in linha31 and 0 not in linha32 and 0 not in coluna31 and 0 not in coluna32):    
+            print("mill 1")
+            return 1
     if (linha31.sum()==6 or linha32.sum()==6 or coluna31.sum()==6 or coluna32.sum()==6):
-        print("mill 2")
-        return 2
+        
+            print("mill 2")
+            return 2
 
     for i in range(6):
         if (linhas[i].sum() == 3):
+            if (0 not in linhas[i]):
                 print("mill 1")
                 return 1
     for i in range(6):
         if (colunas[i].sum() == 3):
+            if (0 not in colunas[i]):
                 print("mill 1")
                 return 1
 
     for i in range(6):
         if (linhas[i].sum() == 6):
+            if (0 not in linhas[i]):
                 print("mill 2")
                 return 2
     for i in range(6):
         if (colunas[i].sum() == 6):
+            if (0 not in colunas[i]):
                 print("mill 2")
                 return 2
     return 0
