@@ -27,7 +27,9 @@ def verify_mill(player: int, enemy_player: int):
     if (s.verify() == player):
         print("Select a piece from enemy player to remove")
         place = str(input()).upper()
-        s.remove(place, enemy_player)
+        if(not(s.remove(place, enemy_player))):
+            print("Select a piece from enemy player to remove")
+            place = str(input()).upper()
 
 print("Welcome to the Nine Men's Morris game\nWhat's your name player?")
 player_name = str(input())
@@ -59,14 +61,12 @@ while(pieces_in_board < max_pieces):
         print("Remaing pieces: " + str(max_pieces - pieces_in_board))
         print("Where you want to place your piece?")
         place = str(input()).upper()
-        if(place[0].isdigit() and place[1].isalpha()):
-            if(0 < place[0] < 8 and "A" < place[1] < "H"):
-                while(not(s.place_piece(place, player))):
-                    print("Invalid place\nIndicate a valid place!")
-                    place = str(input()).upper()
-                pieces_in_board += 1
-                verify_mill(player, enemy_player)
-                s.not_my_turn()      
+        while(not(s.place_piece(place, player))):
+            print("Invalid place\nIndicate a valid place!")
+            place = str(input()).upper()
+        pieces_in_board += 1
+        verify_mill(player, enemy_player)
+        s.not_my_turn()      
     else:
         print_board()
         print("Enemy turn...")
