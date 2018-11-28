@@ -1,7 +1,7 @@
 import xmlrpc.client
 import time
 import os
-s = xmlrpc.client.ServerProxy('http://localhost:10001')
+s = xmlrpc.client.ServerProxy('http://192.168.3.11:10001')
 
 
 def print_board():
@@ -45,29 +45,28 @@ else:
 
 print_board()
 
-while(s.ready()):
-    print("Waiting for another player...")
-    time.sleep(3)
+#while(s.ready()):
+#    print("Waiting for another player...")
+#    time.sleep(3)
 
 
 pieces_in_board = 0
 max_pieces = 9
 print("Time to place your pieces")
-#####----Time to place pieces in board
 while(pieces_in_board < max_pieces):
     while(s.my_turn(player)):
         print_board()
         print("Remaing pieces: " + str(max_pieces - pieces_in_board))
         print("Where you want to place your piece?")
         place = str(input()).upper()
-        
-        while(not(s.place_piece(place, player))):
-            print("Invalid place\nIndicate a valid place!")
-            place = str(input()).upper()
-        
-        pieces_in_board += 1
-        verify_mill(player, enemy_player)
-        s.not_my_turn()
+        if(place[0].isdigit() and place[1].isalpha()):
+            if(0 < place[0] < 8 and "A" < place[1] < "H"):
+                while(not(s.place_piece(place, player))):
+                    print("Invalid place\nIndicate a valid place!")
+                    place = str(input()).upper()
+                pieces_in_board += 1
+                verify_mill(player, enemy_player)
+                s.not_my_turn()      
     else:
         print_board()
         print("Enemy turn...")
