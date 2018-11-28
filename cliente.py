@@ -1,7 +1,14 @@
 import xmlrpc.client
 import time
 import os
-s = xmlrpc.client.ServerProxy('http://192.168.3.11:10001')
+
+try:
+    ip = os.sys.argv[1]
+    s = xmlrpc.client.ServerProxy('http://'+ip+':10001')
+except IndexError:
+    print("Invalid IP")
+    exit()
+
 
 
 def print_board():
