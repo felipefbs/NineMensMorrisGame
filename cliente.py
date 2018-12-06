@@ -2,8 +2,8 @@ import xmlrpc.client
 import time
 #import os
 
-print("Server IP Address:")
-ip = str(input())
+#print("Server IP Address:")
+ip = '127.0.0.1'#str(input())
 s = xmlrpc.client.ServerProxy('http://'+ip+':10001')
 
 def print_board():
@@ -25,8 +25,9 @@ def print_board():
             count+=1
         print("|"+ str(int(count/7)))
 
-def verify_mill(player: int, enemy_player: int):
-    if (s.verify() == player):
+def verify_mill(place: str, player: int, enemy_player: int):
+    if (s.verify(place, player)):
+        print_board()
         print("Select a piece from enemy player to remove")
         place = str(input()).upper()
         if(not(s.remove(place, enemy_player))):
@@ -67,7 +68,7 @@ while(pieces_in_board < max_pieces):
             print("Invalid place\nIndicate a valid place!")
             place = str(input()).upper().replace(" ", "")
         pieces_in_board += 1
-        verify_mill(player, enemy_player)
+        verify_mill(place, player, enemy_player)
         s.not_my_turn()      
     else:
         print_board()
@@ -96,7 +97,7 @@ while(game == 0):
             next_place = str(input()).upper().replace(" ", "")
         print_board()
         
-        verify_mill(player, enemy_player)
+        verify_mill(next_place, player, enemy_player)
 
         print_board()
         s.not_my_turn()

@@ -5,7 +5,7 @@ import random
 
 #print("Server IP Address:")
 ip = '127.0.0.1' #str(input())
-server = SimpleXMLRPCServer((ip, 10001))
+server = SimpleXMLRPCServSer((ip, 10001))
 player_turn = 0
 players = []
 def login(player_name: str) -> int:
@@ -146,39 +146,47 @@ def remove_piece(place: str, enemy_player: int) -> bool:
         return False
 server.register_function(remove_piece, "remove")
 
-def verify_mill(player: int):
-    colunas = []
-    linhas = []
-    player1_mill = [[1,0,0,1,0,0,1], [0,1,0,1,0,1,0], [0,0,1,1,1,0,0], [1,1,1]]
-    player2_mill = [[2,0,0,2,0,0,2], [0,2,0,2,0,2,0], [0,0,2,2,2,0,0], [2,2,2]]
-
-    for i in range(7):
-        colunas.append(board[:,i])
-        linhas.append(board[i])
-    linha31 = linhas[3][:3]
-    linha32 = linhas[3][4:]
-    coluna31 = colunas[3][:3]
-    coluna32 = colunas[3][4:]
-    del linhas[3]
-    del colunas[3]
-
-    if (player == 1):
-        if (linha31 in player1_mill or coluna31 in player1_mill or linha32 in player1_mill or coluna32 in player1_mill):
-            print("mill 1")
-            return player
-        for i in range(6):
-            if (linhas[i] in player1_mill or colunas[i] in player1_mill):
-                print("mill 1")
-                return player
-    else:
-        if (linha31 in player2_mill or coluna31 in player2_mill or linha32 in player2_mill or coluna32 in player2_mill):
-            print("mill 2")
-            return player
-        for i in range(6):
-            if (linhas[i] in player1_mill or colunas[i] in player1_mill):
-                print("mill 1")
-                return player
-    return 0
+def is_mill(player: int, place1: str, place2: str) -> bool:
+    if (board[line_column(place1)] == player and board[line_column(place2)] == player):
+        return True
+    return False
+'''
+1A        1D       1G
+    2B    2D    2F
+       3C 3D 3E
+4A  4B 4C    4E 4F 4G
+       5C 5D 5E
+    6B    6D    6F
+7A        7D       7G
+'''
+def verify_mill(place: str, player: int) -> bool:
+    mill = { 
+        '1A': (is_mill(player, '1D', '1G')) or (is_mill(player, '4A', '7A')),
+        '1D': (is_mill(player, '1G', '1A')) or (is_mill(player, '2D', '3D')),
+        '1G': (is_mill(player, '1D', '1A')) or (is_mill(player, '4G', '7G')),
+        '2B': (is_mill(player, '2D', '2F')) or (is_mill(player, '4B', '6A')),
+        '2D': (is_mill(player, '2B', '2F')) or (is_mill(player, '1D', '3D')),
+        '2F': (is_mill(player, '4F', '6F')) or (is_mill(player, '2D', '2B')),
+        '3C': (is_mill(player, '3D', '3E')) or (is_mill(player, '4C', '5C')),
+        '3D': (is_mill(player, '3C', '3E')) or (is_mill(player, '1D', '2D')),
+        '3E': (is_mill(player, '4E', '5E')) or (is_mill(player, '3C', '3D')),
+        '4A': (is_mill(player, '1A', '7A')) or (is_mill(player, '4B', '4C')),
+        '4B': (is_mill(player, '4A', '4C')) or (is_mill(player, '2B', '6B')),
+        '4C': (is_mill(player, '3C', '5C')) or (is_mill(player, '4A', '4B')),
+        '4E': (is_mill(player, '4F', '4G')) or (is_mill(player, '3E', '5E')),
+        '4F': (is_mill(player, '2F', '6F')) or (is_mill(player, '4E', '4G')),
+        '4G': (is_mill(player, '1G', '7G')) or (is_mill(player, '4E', '4F')),
+        '5C': (is_mill(player, '3C', '4C')) or (is_mill(player, '5D', '5E')),
+        '5D': (is_mill(player, '5C', '5E')) or (is_mill(player, '6D', '7D')),
+        '5E': (is_mill(player, '5C', '5D')) or (is_mill(player, '3E', '4E')),
+        '6B': (is_mill(player, '6D', '6F')) or (is_mill(player, '2B', '4B')),
+        '6D': (is_mill(player, '6B', '6F')) or (is_mill(player, '5D', '7D')),
+        '6F': (is_mill(player, '6D', '6B')) or (is_mill(player, '2F', '4F')),
+        '7A': (is_mill(player, '1A', '4A')) or (is_mill(player, '7D', '7G')),
+        '7D': (is_mill(player, '7A', '7G')) or (is_mill(player, '5D', '6D')),
+        '7G': (is_mill(player, '7A', '7D')) or (is_mill(player, '1G', '4G'))
+        }
+    return mill[place]
 server.register_function(verify_mill, "verify")
 
 def end_game():
