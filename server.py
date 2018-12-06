@@ -146,10 +146,11 @@ def remove_piece(place: str, enemy_player: int) -> bool:
         return False
 server.register_function(remove_piece, "remove")
 
-def verify_mill():
+def verify_mill(player: int):
     colunas = []
     linhas = []
-
+    player1_mill = [[1,0,0,1,0,0,1], [0,1,0,1,0,1,0], [0,0,1,1,1,0,0], [1,1,1]]
+    player2_mill = [[2,0,0,2,0,0,2], [0,2,0,2,0,2,0], [0,0,2,2,2,0,0], [2,2,2]]
     for i in range(7):
         colunas.append(board[:,i])
         linhas.append(board[i])
@@ -159,36 +160,25 @@ def verify_mill():
     coluna32 = colunas[3][4:]
     del linhas[3]
     del colunas[3]
-    if (linha31.sum()==3 or linha32.sum()==3 or coluna31.sum()==3 or coluna32.sum()==3):
-        if (0 not in linha31 and 0 not in linha32 and 0 not in coluna31 and 0 not in coluna32):    
+
+    if (player == 1):
+        if (linha31 in player1_mill or coluna31 in player1_mill or linha32 in player1_mill or coluna32 in player1_mill):
             print("mill 1")
-            return 1
-    if (linha31.sum()==6 or linha32.sum()==6 or coluna31.sum()==6 or coluna32.sum()==6):
-        
+            return player
+        for i in range(6):
+            if (linhas[i] in player1_mill or colunas[i] in player1_mill):
+                print("mill 1")
+                return player
+    else:
+        if (linha31 in player2_mill or coluna31 in player2_mill or linha32 in player2_mill or coluna32 in player2_mill):
             print("mill 2")
-            return 2
-
-    for i in range(6):
-        if (linhas[i].sum() == 3):
-            if (0 not in linhas[i]):
+            return player
+        for i in range(6):
+            if (linhas[i] in player1_mill or colunas[i] in player1_mill):
                 print("mill 1")
-                return 1
-    for i in range(6):
-        if (colunas[i].sum() == 3):
-            if (0 not in colunas[i]):
-                print("mill 1")
-                return 1
+                return player
+    
 
-    for i in range(6):
-        if (linhas[i].sum() == 6):
-            if (0 not in linhas[i]):
-                print("mill 2")
-                return 2
-    for i in range(6):
-        if (colunas[i].sum() == 6):
-            if (0 not in colunas[i]):
-                print("mill 2")
-                return 2
     return 0
 server.register_function(verify_mill, "verify")
 
