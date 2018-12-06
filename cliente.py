@@ -1,9 +1,11 @@
 import xmlrpc.client
 import time
+import sys
 #import os
-
-#print("Server IP Address:")
-ip = '127.0.0.1'#str(input())
+ip = sys.argv[1]
+if not ip:
+    print("Server IP Address:")
+    ip = str(input())
 s = xmlrpc.client.ServerProxy('http://'+ip+':10001')
 
 def print_board():

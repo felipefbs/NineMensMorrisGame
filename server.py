@@ -3,9 +3,9 @@ import numpy as np
 import time
 import random
 
-#print("Server IP Address:")
-ip = '127.0.0.1' #str(input())
-server = SimpleXMLRPCServSer((ip, 10001))
+
+ip = '127.0.0.1'
+server = SimpleXMLRPCServer((ip, 10001))
 player_turn = 0
 players = []
 def login(player_name: str) -> int:
