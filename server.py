@@ -3,8 +3,8 @@ import numpy as np
 import time
 import random
 
-print("Server IP Address:")
-ip = str(input())
+#print("Server IP Address:")
+ip = '127.0.0.1' #str(input())
 server = SimpleXMLRPCServer((ip, 10001))
 player_turn = 0
 players = []
@@ -118,14 +118,14 @@ server.register_function(place_piece, "place_piece")
 def move_piece(curr_place: str, next_place: str, player: int) -> bool:
     # se o local atual for uma peça do jogador e o proximo local for um local vazio e ambos estiverem em locais dentro do tabuleiro a função executa o movimento
     if(board[line_column(curr_place)] == player and board[line_column(next_place)] == 5):
-        l, c = line_column(curr_place)
-        if (0 <= l <= 6 and 0 <= c <= 6):   
-            piece_placer(l, c, 5)
+        line, column = line_column(curr_place)
+        if (0 <= line <= 6 and 0 <= column <= 6):   
+            piece_placer(line, column, 5)
         else:
             return False
-        l, c = line_column(next_place)
+        line, column = line_column(next_place)
         if (0 <= line <= 6 and 0 <= column <= 6):   
-            piece_placer(l, c, player)
+            piece_placer(line, column, player)
             return True
         else:
             return False
@@ -151,6 +151,7 @@ def verify_mill(player: int):
     linhas = []
     player1_mill = [[1,0,0,1,0,0,1], [0,1,0,1,0,1,0], [0,0,1,1,1,0,0], [1,1,1]]
     player2_mill = [[2,0,0,2,0,0,2], [0,2,0,2,0,2,0], [0,0,2,2,2,0,0], [2,2,2]]
+
     for i in range(7):
         colunas.append(board[:,i])
         linhas.append(board[i])
@@ -177,8 +178,6 @@ def verify_mill(player: int):
             if (linhas[i] in player1_mill or colunas[i] in player1_mill):
                 print("mill 1")
                 return player
-    
-
     return 0
 server.register_function(verify_mill, "verify")
 
