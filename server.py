@@ -8,10 +8,15 @@ ip_server = '127.0.0.1'
 port = 10000
 server = SimpleXMLRPCServer((ip_server, port), allow_none=True)
 players = []
-sock_c1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock_c2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-player_turn = 1
+player_turn = 0
 game_stage = 0
+
+def send_sock(player: int, msg: str):
+        server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print(players[player][1], (port+player+1))
+        server_sock.connect((players[player][1], (port+player+1)))
+        server_sock.send(msg.encode('utf-8'))
+        server_sock.close()
 
 def login(player_name: str, client_ip: str):
         print(player_name)
@@ -29,23 +34,24 @@ def im_ready(player: int):
         global player1_ready 
         global player2_ready
         if (player == 1):
-                sock_c1.connect((players[0][1], 10001))
                 return 0
         else:   
-                sock_c2.connect((players[1][1], 10002))
-                return 0
+                send_sock(0, '1')
+                send_sock(1, '1')
+                send_sock(player_turn, '1')
 server.register_function(im_ready, 'im_ready')
 
 
 def not_my_turn():
         global player_turn
         print(player_turn)
-        if(player_turn == 1):
-                player_turn = 2
-                #sock_c2.send("2".encode('utf-8'))
-        else:
+        if(player_turn == 0):
                 player_turn = 1
-                #sock_c1.send("2".encode('utf-8'))
+                send_sock(player_turn, '1')
+        else:
+                player_turn = 0
+                send_sock(player_turn, '1')
+
 server.register_function(not_my_turn, "not_my_turn")
 
 def init_board():
@@ -69,13 +75,6 @@ def get_board():
                         str_board += str(board[i,j])
         return str_board.replace('0', '').replace('5', 'O')
 server.register_function(get_board, 'board')
-
-def game_stage_changer(stage: int):
-        global game_stage
-        game_stage = stage
-        #sock_c1.send("1".encode('utf-8'))
-
-server.register_function(game_stage_changer, 'game_stage')
 
 def piece_placer(line: int, column: int, player: int):
     board[line, column] = player
@@ -112,7 +111,6 @@ def place_piece(place: str, player: int) -> bool:
     else:
         return False
 server.register_function(place_piece, "place")
-
 
 def is_mill(player: int, place1: str, place2: str) -> bool:
     if (board[line_column(place1)] == player and board[line_column(place2)] == player):
@@ -178,52 +176,22 @@ def move_piece(curr_place: str, next_place: str, player: int) -> bool:
 server.register_function(move_piece, "move")
 
 def end_game():
-    player1_pieces = 0
-    player2_pieces = 0
+        player1_pieces = 0
+        player2_pieces = 0
 
-    for i in range(7):
-        for j in range(7):
-            if(board[i,j] == 1):
-                player1_pieces += 1
-            elif(board[i,j] == 2):
-                player2_pieces += 1
-    if (player1_pieces ==2 or player2_pieces ==2):
-        if(player1_pieces<player2_pieces):
-            return 1
-        else:
-            return 2
-    return 0
-server.register_function(end_game, 'game')
-def game():
-        global player_turn
-        while (game_stage == 1 or game_stage == 0):
-                if(game_stage == 0):
-                        time.sleep(1)
-                        if(len(players) == 1):
-                                sock_c1.send("wait".encode('utf-8'))
-                        elif(len(players) == 2):
-                                sock_c1.send("ready".encode('utf-8'))
-                                sock_c2.send("ready".encode('utf-8'))
-                if(game_stage == 1): #colocar as peças()
-                        time.sleep(1)
-                        if (player_turn == 1):
-                                print("p1")
-                                sock_c1.send("1".encode('utf-8'))
-                                sock_c2.send("1".encode('utf-8'))
-                        elif(player_turn == 2):
-                                print("p2")
-                                sock_c1.send("2".encode('utf-8'))
-                                sock_c2.send("2".encode('utf-8'))
-        player_turn = 1   
-        while (game_stage == 2):
-                if (player_turn == 1):
-                        time.sleep(1)
-                        sock_c1.send("1".encode('utf-8'))
-                        sock_c2.send("1".encode('utf-8'))
-                elif(player_turn == 2):
-                        time.sleep(1)
-                        sock_c1.send("2".encode('utf-8'))
-                        sock_c2.send("2".encode('utf-8')) 
-g = threading.Thread(target=game)
-g.start()
+        for i in range(7):
+                for j in range(7):
+                        if(board[i,j] == 1):
+                                player1_pieces += 1
+                        elif(board[i,j] == 2):
+                                player2_pieces += 1
+
+        if (player1_pieces == 2 or player2_pieces == 2):
+                if(player1_pieces < player2_pieces):
+                        return 1
+                else:
+                        return 2
+        return 0
+server.register_function(end_game, 'end_game')
+
 server.serve_forever()
