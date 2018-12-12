@@ -13,14 +13,11 @@ game_stage = 0
 
 def send_sock(player: int, msg: str):
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(players[player][1], (port+player+1))
         server_sock.connect((players[player][1], (port+player+1)))
         server_sock.send(msg.encode('utf-8'))
         server_sock.close()
 
 def login(player_name: str, client_ip: str):
-        print(player_name)
-        print(client_ip)
         if(len(players) < 2):
                 players.append([player_name, client_ip])
                 print(players)
@@ -44,12 +41,13 @@ server.register_function(im_ready, 'im_ready')
 
 def not_my_turn():
         global player_turn
-        print(player_turn)
         if(player_turn == 0):
                 player_turn = 1
+                print(player_turn)
                 send_sock(player_turn, '1')
         else:
                 player_turn = 0
+                print(player_turn)
                 send_sock(player_turn, '1')
 
 server.register_function(not_my_turn, "not_my_turn")
@@ -186,11 +184,10 @@ def end_game():
                         elif(board[i,j] == 2):
                                 player2_pieces += 1
 
-        if (player1_pieces == 2 or player2_pieces == 2):
-                if(player1_pieces < player2_pieces):
-                        return 1
-                else:
-                        return 2
+        if (player1_pieces == 2):
+                return 2
+        if (player2_pieces == 2):
+                return 1
         return 0
 server.register_function(end_game, 'end_game')
 

@@ -55,26 +55,24 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.bind((ip_client, (port)))
 client.listen()
 server.im_ready(player)
-def accep():
+def receiv_sock():
     r, a = client.accept()
     msg = r.recv(8).decode('utf-8')
 
-
-
 print_board()
 print("Waiting for another player...")
-accep()
+receiv_sock()
 print("Player found. Let the game begin!")
  
 pieces_in_board = 0
-max_pieces = 3
+max_pieces = 4
 print("Time to place your pieces into the board")
-#server.game_stage(1)
+
 while (pieces_in_board < max_pieces):
     print_board()
     print("Enemy turn...")
     print("Remaing pieces: " + str(max_pieces - pieces_in_board))
-    accep()
+    receiv_sock()
     print_board()
     print("Remaing pieces: " + str(max_pieces - pieces_in_board))
     place = str(input("Where you want to place your piece?  ")).upper().replace(" ", "")
@@ -87,12 +85,12 @@ while (pieces_in_board < max_pieces):
 
 print_board()
 
-
-while (True):
+end_game = server.end_game()
+while (end_game == 0):
     print_board()
     print("Enemy turn...")
     print("You have " + str(pieces_in_board)+" pieces in the board")
-    accep()
+    receiv_sock()
     print_board()
     print("You have " + str(pieces_in_board)+" pieces in the board")
     print("Wich piece you want to move?")
@@ -107,4 +105,10 @@ while (True):
     print_board()
     verify_mill(next_place, player, enemy_player)
     server.not_my_turn()
+    end_game = server.end_game()
+
+if(end_game == player):
+    print("You Win")
+elif(end_game == enemy_player):
+    print("You Loose")
 
