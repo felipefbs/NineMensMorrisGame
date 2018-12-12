@@ -9,7 +9,7 @@ port = 10000
 server = SimpleXMLRPCServer((ip_server, port), allow_none=True)
 players = []
 player_turn = 0
-game_stage = 0
+game_stage = 1
 
 def send_sock(player: int, msg: str):
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,9 +48,22 @@ def not_my_turn():
         else:
                 player_turn = 0
                 print(player_turn)
+                if(end_game()):
+                        send_sock(player_turn, 'end')
                 send_sock(player_turn, '1')
 
 server.register_function(not_my_turn, "not_my_turn")
+
+def waiter():
+        global game_stage
+        if (game_stage == 1):
+                game_stage += 1
+        else:
+                time.sleep(2)
+                send_sock(0, '1')
+                send_sock(1, '1')
+server.register_function(waiter, "waiter")
+
 
 def init_board():
         board = np.zeros((7,7), dtype = int)
@@ -174,21 +187,16 @@ def move_piece(curr_place: str, next_place: str, player: int) -> bool:
 server.register_function(move_piece, "move")
 
 def end_game():
-        player1_pieces = 0
-        player2_pieces = 0
-
-        for i in range(7):
-                for j in range(7):
-                        if(board[i,j] == 1):
-                                player1_pieces += 1
-                        elif(board[i,j] == 2):
-                                player2_pieces += 1
-
-        if (player1_pieces == 2):
-                return 2
-        if (player2_pieces == 2):
-                return 1
-        return 0
+        str_board = get_board()
+        player1_pieces, player2_pieces = 0, 0
+        for i in str_board:
+                if (i == '1'):
+                        player1_pieces += 1
+                if (i == '2'):
+                        player2_pieces += 1
+        if (player1_pieces == 2 or player2_pieces == 2 ):
+                return True
+        else:
+                return False
 server.register_function(end_game, 'end_game')
-
 server.serve_forever()

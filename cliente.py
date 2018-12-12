@@ -1,7 +1,7 @@
 import socket
 import xmlrpc.client
 import time
-
+import os
 
 def client_ip():
     ip_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -17,6 +17,7 @@ server = xmlrpc.client.ServerProxy('http://'+ip_server+':'+str(port))
 
 def print_board():
     board = server.board()
+    os.system('clear')
     print('  A   B   C   D   E   F   G')
     print('1 '+board[0]+'-----------'+board[1]+'-----------'+board[2])
     print('  |           |           |')
@@ -32,7 +33,23 @@ def print_board():
     print('  |           |           |')
     print('7 '+board[21]+'-----------'+board[22]+'-----------'+board[23])
 
+def game_winner():
+    board = server.board()
+    p1, p2 = 0, 0
+    for i in board:
+        if (i == str(player)):
+            p1 += 1
+        if (i == str(enemy_player)):
+            p2 += 1
+    if (p1 == 2):
+        return 'lose'
+    elif (p2 == 2):
+        return 'win'
+    else:
+        return 0
+
 def verify_mill(place: str, player: int, enemy_player: int):
+    global pieces_in_board
     if (server.verify(place, player)):
         print_board()
         print("Select a piece from enemy player to remove")
@@ -40,6 +57,7 @@ def verify_mill(place: str, player: int, enemy_player: int):
         if(not(server.remove(place, enemy_player))):
             print("Select a piece from enemy player to remove")
             place = str(input()).upper()
+        pieces_in_board -= 1
 
 name = str(input('What\'s your name, player?  '))
 player = server.login(name, ip_client)
@@ -55,9 +73,10 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.bind((ip_client, (port)))
 client.listen()
 server.im_ready(player)
-def receiv_sock():
+def receiv_sock() -> str:
     r, a = client.accept()
     msg = r.recv(8).decode('utf-8')
+    return msg
 
 print_board()
 print("Waiting for another player...")
@@ -65,7 +84,7 @@ receiv_sock()
 print("Player found. Let the game begin!")
  
 pieces_in_board = 0
-max_pieces = 4
+max_pieces = 3
 print("Time to place your pieces into the board")
 
 while (pieces_in_board < max_pieces):
@@ -84,13 +103,17 @@ while (pieces_in_board < max_pieces):
     server.not_my_turn()
 
 print_board()
+server.waiter()
+receiv_sock()
 
-end_game = server.end_game()
-while (end_game == 0):
+while (True):
+    if (server.end_game()):
+        break
     print_board()
     print("Enemy turn...")
     print("You have " + str(pieces_in_board)+" pieces in the board")
-    receiv_sock()
+    if (receiv_sock() == 'end'):
+        break
     print_board()
     print("You have " + str(pieces_in_board)+" pieces in the board")
     print("Wich piece you want to move?")
@@ -105,10 +128,12 @@ while (end_game == 0):
     print_board()
     verify_mill(next_place, player, enemy_player)
     server.not_my_turn()
-    end_game = server.end_game()
 
-if(end_game == player):
-    print("You Win")
-elif(end_game == enemy_player):
-    print("You Loose")
+print_board()
+if (game_winner() == 'win'):
+    print("You Win!")
+else:
+    print("You Lose")
+
+client.close()
 
